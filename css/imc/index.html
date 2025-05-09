@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>IMC</title>
+    <meta charset="utf-8">
+    <style>
+    </style>
+  </head>
+  
+<body>
+    <main class="container py-5">
+        <form class="card">
+            <div class="card-header text-center">
+                <h2>IMC</h2>
+            </div>
+
+            <div class="card-body">
+                <div class="form-group">
+                <label for="altura">Altura (m)</label>
+                <input type="text" class="form-control form-control-lg" name="altura" id="altura" placeholder="Digite a altura">
+                </div>
+
+                <div class="form-group">
+                <label for="peso">Peso (Kg)</label>
+                <input type="text" class="form-control form-control-lg" name="peso" id="peso" placeholder="Digite o peso">
+                </div>
+
+                <fieldset class="form-group">
+                <legend>Sexo</legend>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="sexo" id="masculino" value="masculino">
+                    <label class="form-check-label" for="masculino">Masculino</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="sexo" id="feminino" value="feminino">
+                    <label class="form-check-label" for="feminino">Feminino</label>
+                </div>
+                </fieldset>
+
+                <div class="form-group">
+                    <label for="imc">Condição</label>
+                    <input type="text" class="form-control form-control-lg" name="imc" id="imc" readonly>
+                </div>
+
+                <div class="text-center">
+                    <button id="calc-imc-btn" type="button" class="btn btn-secondary">
+                        Calculando o IMC <i class="fa fa-tachometer" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+  </body>
+</html>
