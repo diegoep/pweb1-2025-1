@@ -1,0 +1,23 @@
+td{
+	padding: 5px;
+}
+table {
+	text-align: center;
+	width: 50%;
+	border-collapse: collapse;
+	margin: auto;
+	min-width: 300px;
+	margin-top: 50px;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+table thead tr {
+	font-weight: bold;
+	background-color: rgb(173,216,230);
+}
+table.notas tbody tr:nth-child(odd) {
+	background-color: rgb(240,248,255);
+}
+.nome {
+	text-align: left;
+}
