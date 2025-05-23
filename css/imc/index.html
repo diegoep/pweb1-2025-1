@@ -1,54 +1,57 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>IMC</title>
-    <meta charset="utf-8">
-    <style>
-    </style>
-  </head>
-  
-<body>
-    <main class="container py-5">
-        <form class="card">
-            <div class="card-header text-center">
-                <h2>IMC</h2>
-            </div>
-
-            <div class="card-body">
-                <div class="form-group">
-                <label for="altura">Altura (m)</label>
-                <input type="text" class="form-control form-control-lg" name="altura" id="altura" placeholder="Digite a altura">
+    <head>
+        <title>IMC</title>
+        <meta charset="utf-8">
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+        <main class="w-full max-w-md mx-auto py-8">
+            <form class="bg-white shadow-lg rounded-lg p-8 space-y-6">
+                <div class="text-center mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">IMC</h2>
                 </div>
 
-                <div class="form-group">
-                <label for="peso">Peso (Kg)</label>
-                <input type="text" class="form-control form-control-lg" name="peso" id="peso" placeholder="Digite o peso">
-                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label for="altura" class="block text-gray-700 font-medium mb-1">Altura (m)</label>
+                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg" name="altura" id="altura" placeholder="Digite a altura">
+                    </div>
 
-                <fieldset class="form-group">
-                <legend>Sexo</legend>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="sexo" id="masculino" value="masculino">
-                    <label class="form-check-label" for="masculino">Masculino</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="sexo" id="feminino" value="feminino">
-                    <label class="form-check-label" for="feminino">Feminino</label>
-                </div>
-                </fieldset>
+                    <div>
+                        <label for="peso" class="block text-gray-700 font-medium mb-1">Peso (Kg)</label>
+                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg" name="peso" id="peso" placeholder="Digite o peso">
+                    </div>
 
-                <div class="form-group">
-                    <label for="imc">Condição</label>
-                    <input type="text" class="form-control form-control-lg" name="imc" id="imc" readonly>
+                    <fieldset>
+                        <legend class="block text-gray-700 font-medium mb-2">Sexo</legend>
+                        <div class="flex items-center space-x-6">
+                            <div class="flex items-center">
+                                <input class="form-radio h-5 w-5 text-blue-600" type="radio" name="sexo" id="masculino" value="masculino">
+                                <label class="ml-2 text-gray-700" for="masculino">Masculino</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input class="form-radio h-5 w-5 text-pink-500" type="radio" name="sexo" id="feminino" value="feminino">
+                                <label class="ml-2 text-gray-700" for="feminino">Feminino</label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div>
+                        <label for="imc" class="block text-gray-700 font-medium mb-1">Condição</label>
+                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-lg" name="imc" id="imc" readonly>
+                    </div>
                 </div>
 
                 <div class="text-center">
-                    <button id="calc-imc-btn" type="button" class="btn btn-secondary">
-                        Calculando o IMC <i class="fa fa-tachometer" aria-hidden="true"></i>
+                    <button id="calc-imc-btn" type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                        Calculando o IMC
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
                     </button>
                 </div>
-            </div>
-        </form>
-    </main>
-  </body>
+            </form>
+        </main>
+    </body>
 </html>
