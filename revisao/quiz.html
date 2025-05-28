@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Revisão PWeb 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            /* Light gray background */
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+        }
+
+        .answer-option {
+            background-color: #e2e8f0;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .answer-option:hover {
+            background-color: #cbd5e0;
+        }
+
+        .answer-option.selected {
+            border-color: #4299e1;
+            background-color: #ebf8ff;
+        }
+
+        .answer-option.correct {
+            background-color: #c6f6d5;
+            border-color: #48bb78;
+        }
+
+        .answer-option.incorrect {
+            background-color: #fed7d7;
+            border-color: #f56565;
+        }
+
+        .feedback-message {
+            margin-top: 1rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+
+        .feedback-correct {
+            background-color: #d1fae5;
+            /* Greenish background */
+            color: #10b981;
+            /* Dark green text */
+        }
+
+        .feedback-incorrect {
+            background-color: #fee2e2;
+            /* Reddish background */
+            color: #ef4444;
+            /* Dark red text */
+        }
+
+        .button-primary {
+            background-color: #4299e1;
+            /* Blue button */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .button-primary:hover {
+            background-color: #3182ce;
+            /* Darker blue on hover */
+        }
+
+        .button-secondary {
+            background-color: #a0aec0;
+            /* Gray button */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .button-secondary:hover {
+            background-color: #718096;
+            /* Darker gray on hover */
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4299e1;
+            width: 0%;
+            border-radius: 0.5rem;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .quiz-results {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .quiz-results h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-results p {
+            font-size: 1.25rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-results button {
+            margin-top: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .quiz-container {
+                margin: 2rem 1rem;
+                padding: 1.5rem;
+            }
+
+            .question-text {
+                font-size: 1.25rem;
+            }
+
+            .answer-option {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .button-primary,
+            .button-secondary {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .quiz-results h2 {
+                font-size: 2rem;
+            }
+
+            .quiz-results p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen">
+    <div id="quizApp" class="quiz-container">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">Quiz de Revisão Web 1</h1>
+            <div class="text-lg font-semibold text-gray-700">Questão <span id="currentQuestionNumber">1</span> de <span
+                    id="totalQuestions">20</span></div>
+        </div>
+
+        <div class="progress-bar-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div id="questionSection" class="flex-grow">
+            <p id="questionText" class="question-text"></p>
+            <div id="answerOptions" class="flex flex-col gap-3">
+            </div>
+            <div id="feedback" class="feedback-message hidden"></div>
+            <p id="hintText" class="text-sm text-gray-600 mt-4 italic hidden"></p>
+        </div>
+
+        <div class="flex justify-between mt-8">
+            <button id="prevButton" class="button-secondary hidden">Anterior</button>
+            <button id="nextButton" class="button-primary ml-auto">Próxima Questão</button>
+            <button id="submitAnswerButton" class="button-primary hidden">Verificar Resposta</button>
+        </div>
+
+        <div id="resultsSection" class="quiz-results hidden">
+            <h2>Quiz Concluído!</h2>
+            <p>Você acertou <span id="scoreDisplay">0</span> de <span id="totalQuestionsResults">42</span> questões.</p>
+            <button id="restartButton" class="button-primary">Refazer Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Na arquitetura cliente-servidor de uma aplicação web, qual componente é tipicamente responsável por solicitar recursos e exibir o conteúdo para o usuário?",
+                answerOptions: [
+                    { text: "Servidor Web", rationale: "O servidor web armazena e processa as requisições, mas não as exibe diretamente ao usuário final da mesma forma que o cliente.", isCorrect: false },
+                    { text: "Navegador Web (Cliente)", rationale: "O navegador atua como o cliente, requisitando páginas e interpretando HTML/CSS/JS para apresentar a interface ao usuário.", isCorrect: true },
+                    { text: "Banco de Dados", rationale: "O banco de dados armazena informações, mas não é o componente que interage diretamente com o usuário para exibição.", isCorrect: false },
+                    { text: "Protocolo HTTP", rationale: "O HTTP é o protocolo de comunicação, mas não é um componente em si que exibe conteúdo.", isCorrect: false }
+                ],
+                hint: "Pense em qual software você usa para acessar websites."
+            },
+            {
+                question: "Qual é a principal finalidade do HTML em uma aplicação web?",
+                answerOptions: [
+                    { text: "Definir a interatividade e comportamento dinâmico da página.", rationale: "Essa é a principal função do JavaScript, não do HTML.", isCorrect: false },
+                    { text: "Estilizar a apresentação visual dos elementos da página.", rationale: "Essa é a principal função do CSS.", isCorrect: false },
+                    { text: "Estruturar o conteúdo e definir a semântica dos elementos da página.", rationale: "HTML fornece o esqueleto e o significado do conteúdo de uma página web.", isCorrect: true },
+                    { text: "Gerenciar a comunicação entre o cliente e o servidor.", rationale: "Protocolos como HTTP são responsáveis pela comunicação; HTML foca na estrutura do documento.", isCorrect: false }
+                ],
+                hint: "Considere o que aconteceria se uma página web não tivesse CSS ou JavaScript, mas apenas HTML."
+            },
+            {
+                question: "Qual das seguintes tags HTML é usada para definir o corpo principal de um documento HTML, onde o conteúdo visível da página é colocado?",
+                answerOptions: [
+                    { text: "<head>", rationale: "A tag <head> contém metadados sobre o documento, como o título e links para CSS, não o conteúdo visível.", isCorrect: false },
+                    { text: "<title>", rationale: "A tag <title> define o título que aparece na aba do navegador, e fica dentro da tag <head>.", isCorrect: false },
+                    { text: "<body>", rationale: "A tag <body> encapsula todo o conteúdo visível de uma página HTML.", isCorrect: true },
+                    { text: "<html>", rationale: "A tag <html> é a raiz de todo o documento HTML, englobando tanto o <head> quanto o <body>.", isCorrect: false }
+                ],
+                hint: "Pense em qual parte do documento HTML contém os parágrafos, imagens e links que você vê."
+            },
+            {
+                question: "Para criar um parágrafo de texto em HTML, qual tag você utilizaria?",
+                answerOptions: [
+                    { text: "<h1>", rationale: "A tag <h1> é usada para o título principal da página, não para parágrafos de texto comum.", isCorrect: false },
+                    { text: "<p>", rationale: "A tag <p> é a tag semântica correta para definir um parágrafo.", isCorrect: true },
+                    { text: "<div>", rationale: "A tag <div> é um contêiner genérico usado para agrupar elementos, mas não define semanticamente um parágrafo.", isCorrect: false },
+                    { text: "<span>", rationale: "A tag <span> é um contêiner inline usado para aplicar estilos ou agrupar pequenos trechos de texto, não para parágrafos inteiros.", isCorrect: false }
+                ],
+                hint: "Esta tag é fundamental para blocos de texto padrão em uma página."
+            },
+            {
+                question: "Qual tag HTML é usada para criar um item em uma lista não ordenada?",
+                answerOptions: [
+                    { text: "<ol>", rationale: "A tag <ol> é usada para criar uma lista ordenada (com números ou letras).", isCorrect: false },
+                    { text: "<ul>", rationale: "A tag <ul> é usada para criar o contêiner de uma lista não ordenada (com marcadores).", isCorrect: false },
+                    { text: "<li>", rationale: "A tag <li> é usada para definir cada item dentro de qualquer tipo de lista (ordenada ou não ordenada).", isCorrect: true },
+                    { text: "<dl>", rationale: "A tag <dl> é usada para criar uma lista de definição, que tem uma estrutura diferente.", isCorrect: false }
+                ],
+                hint: "Pense na tag que representa um 'item de lista' individualmente."
+            },
+            {
+                question: "Em um formulário HTML, qual atributo do elemento `<input>` é crucial para que os dados do campo sejam enviados ao servidor quando o formulário é submetido?",
+                answerOptions: [
+                    { text: "type", rationale: "O atributo 'type' define o tipo de controle de entrada (ex: text, password, checkbox), mas não é o identificador do dado enviado.", isCorrect: false },
+                    { text: "id", rationale: "O atributo 'id' é um identificador único para o elemento no DOM, útil para CSS e JavaScript, mas não é o nome do dado enviado.", isCorrect: false },
+                    { text: "name", rationale: "O atributo 'name' associa um nome ao valor do campo, que é usado como chave quando os dados do formulário são enviados.", isCorrect: true },
+                    { text: "placeholder", rationale: "O atributo 'placeholder' fornece uma dica visual dentro do campo, mas seu valor não é enviado com o formulário.", isCorrect: false }
+                ],
+                hint: "Este atributo funciona como a 'chave' para o valor do campo no backend."
+            },
+            {
+                question: "Qual tipo de seletor CSS é usado para aplicar estilos a um único elemento HTML que possui um atributo `id` específico?",
+                answerOptions: [
+                    { text: "Seletor de Classe (ex: .minha-classe)", rationale: "Seletores de classe são usados para aplicar estilos a múltiplos elementos que compartilham a mesma classe.", isCorrect: false },
+                    { text: "Seletor de Elemento (ex: p)", rationale: "Seletores de elemento aplicam estilos a todas as instâncias de uma determinada tag HTML.", isCorrect: false },
+                    { text: "Seletor de ID (ex: #meu-id)", rationale: "Seletores de ID são usados para selecionar um único elemento com um identificador único na página.", isCorrect: true },
+                    { text: "Seletor Universal (ex: *)", rationale: "O seletor universal aplica estilos a todos os elementos da página, não a um específico por ID.", isCorrect: false }
+                ],
+                hint: "Lembre-se do caractere especial usado em CSS para identificar um ID."
+            },
+            {
+                question: "O CSS Box Model descreve o layout retangular dos elementos HTML. Quais são as quatro propriedades que compõem o Box Model, da mais externa para a mais interna?",
+                answerOptions: [
+                    { text: "Padding, Border, Margin, Content", rationale: "Esta ordem não representa corretamente a estrutura do Box Model da externa para a interna.", isCorrect: false },
+                    { text: "Margin, Border, Padding, Content", rationale: "Esta é a ordem correta, começando pela área de espaçamento externa (margin) até o conteúdo real do elemento.", isCorrect: true },
+                    { text: "Content, Padding, Border, Margin", rationale: "Esta é a ordem inversa, da mais interna para a mais externa.", isCorrect: false },
+                    { text: "Border, Margin, Content, Padding", rationale: "A margem é externa à borda, e o padding é interno à borda.", isCorrect: false }
+                ],
+                hint: "Pense nas camadas de uma cebola, começando pela mais externa que não faz parte do elemento em si."
+            },
+            {
+                question: "Qual propriedade CSS é mais comumente usada para deslocar um elemento e posicioná-lo em relação ao seu contêiner pai mais próximo que tenha uma posição definida (que não seja 'static')?",
+                answerOptions: [
+                    { text: "display: none;", rationale: "'display: none;' remove completamente o elemento do layout e da renderização, não apenas o reposiciona.", isCorrect: false },
+                    { text: "position: relative;", rationale: "'position: relative;' permite ajustar a posição de um elemento em relação à posição do seu ancestral mais próximo.", isCorrect: true },
+                    { text: "position: absolute;", rationale: "'position: absolute;' remove o elemento do fluxo normal e o posiciona em relação ao seu ancestral posicionado mais próximo.", isCorrect: false },
+                    { text: "float: left;", rationale: "'float' remove o elemento do fluxo normal, permitindo que o texto flua ao seu redor, mas seu contexto de posicionamento é diferente do 'position: absolute'.", isCorrect: false }
+                ],
+                hint: "Esta propriedade permite um controle de posicionamento relativo ao seu pai no fluxo padrão."
+            },
+            {
+                question: "Para aplicar estilos CSS específicos apenas quando a largura da tela do dispositivo for menor ou igual a 600 pixels, qual das seguintes `@media` queries seria a mais apropriada?",
+                answerOptions: [
+                    { text: "@media screen and (min-width: 600px)", rationale: "Esta query aplicaria os estilos quando a largura da tela for 600 pixels OU MAIOR.", isCorrect: false },
+                    { text: "@media screen and (max-width: 600px)", rationale: "Esta query aplicaria os estilos quando a largura da tela for 600 pixels OU MENOR, o que corresponde ao solicitado.", isCorrect: true },
+                    { text: "@media screen and (width: 600px)", rationale: "Esta query aplicaria os estilos SOMENTE quando a largura da tela for EXATAMENTE 600 pixels.", isCorrect: false },
+                    { text: "@media all and (max-height: 600px)", rationale: "Esta query considera a altura máxima (max-height) e não a largura máxima (max-width) como solicitado.", isCorrect: false }
+                ],
+                hint: "Pense em qual condição de largura define um limite superior para a aplicação dos estilos."
+            },
+            {
+                question: "Qual elemento HTML é semanticamente mais apropriado para representar a navegação principal de um site?",
+                answerOptions: [
+                    { text: "<div>", rationale: "A tag <div> é um contêiner genérico, sem significado semântico específico, inadequado para navegação principal.", isCorrect: false },
+                    { text: "<header>", rationale: "A tag <header> representa o cabeçalho de uma seção ou página, não especificamente a navegação.", isCorrect: false },
+                    { text: "<nav>", rationale: "A tag <nav> é projetada especificamente para seções de navegação, tornando-a semanticamente correta.", isCorrect: true },
+                    { text: "<footer>", rationale: "A tag <footer> representa o rodapé de uma seção ou página, não a navegação.", isCorrect: false }
+                ],
+                hint: "Pense na tag que descreve a 'navegação' de um site."
+            },
+            {
+                question: "Qual unidade de medida CSS é relativa ao tamanho da fonte do elemento pai?",
+                answerOptions: [
+                    { text: "px", rationale: "Pixels são uma unidade absoluta, não relativa ao tamanho da fonte.", isCorrect: false },
+                    { text: "em", rationale: "A unidade 'em' é relativa ao tamanho da fonte do elemento pai, tornando-a flexível e escalável.", isCorrect: true },
+                    { text: "cm", rationale: "Centímetros são uma unidade absoluta, inadequada para design responsivo.", isCorrect: false },
+                    { text: "vw", rationale: "vw é relativo à largura da viewport, não ao tamanho da fonte do elemento pai.", isCorrect: false }
+                ],
+                hint: "Essa unidade é frequentemente usada para dimensionar fontes de forma responsiva."
+            },
+            {
+                question: "Qual propriedade CSS controla o espaçamento interno entre o conteúdo de um elemento e suas bordas?",
+                answerOptions: [
+                    { text: "margin", rationale: "A propriedade 'margin' define o espaçamento externo, fora das bordas do elemento.", isCorrect: false },
+                    { text: "border", rationale: "A propriedade 'border' define a borda do elemento, não o espaçamento interno.", isCorrect: false },
+                    { text: "padding", rationale: "A propriedade 'padding' define o espaçamento interno, entre o conteúdo e as bordas.", isCorrect: true },
+                    { text: "height", rationale: "A propriedade 'height' define a altura do elemento, não o espaçamento.", isCorrect: false }
+                ],
+                hint: "Pense no espaço 'dentro' da caixa, entre o texto e a borda."
+            },
+            {
+                question: "Qual valor da propriedade CSS `display` faz com que um elemento se comporte como um elemento de bloco em linha?",
+                answerOptions: [
+                    { text: "block", rationale: "O valor 'block' faz o elemento ocupar toda a largura disponível e iniciar em uma nova linha.", isCorrect: false },
+                    { text: "inline", rationale: "O valor 'inline' faz o elemento fluir com o conteúdo, sem quebras de linha.", isCorrect: false },
+                    { text: "inline-block", rationale: "O valor 'inline-block' permite que o elemento flua com o conteúdo, mas com as propriedades de bloco aplicáveis (largura, altura, padding, etc.).", isCorrect: true },
+                    { text: "none", rationale: "O valor 'none' remove o elemento da exibição, não alterando seu comportamento de bloco ou em linha.", isCorrect: false }
+                ],
+                hint: "Este valor combina características de elementos em linha e de bloco."
+            },
+            {
+                question: "Qual pseudo-classe CSS é usada para selecionar um link que foi visitado pelo usuário?",
+                answerOptions: [
+                    { text: ":hover", rationale: "A pseudo-classe ':hover' é aplicada quando o mouse está sobre o link.", isCorrect: false },
+                    { text: ":active", rationale: "A pseudo-classe ':active' é aplicada quando o link está sendo clicado.", isCorrect: false },
+                    { text: ":visited", rationale: "A pseudo-classe ':visited' seleciona links que já foram visitados pelo usuário.", isCorrect: true },
+                    { text: ":link", rationale: "A pseudo-classe ':link' seleciona links que ainda não foram visitados.", isCorrect: false }
+                ],
+                hint: "Pense na palavra que descreve o estado de um link após o clique."
+            },
+            {
+                question: "Qual propriedade CSS é usada para controlar a ordem de empilhamento dos elementos?",
+                answerOptions: [
+                    { text: "position", rationale: "A propriedade 'position' controla o posicionamento, mas não a ordem de empilhamento diretamente.", isCorrect: false },
+                    { text: "float", rationale: "A propriedade 'float' controla o posicionamento lado a lado, não a ordem de empilhamento.", isCorrect: false },
+                    { text: "z-index", rationale: "A propriedade 'z-index' controla a ordem de empilhamento dos elementos sobrepostos.", isCorrect: true },
+                    { text: "display", rationale: "A propriedade 'display' controla como o elemento é exibido, não a ordem de empilhamento.", isCorrect: false }
+                ],
+                hint: "Pense em um eixo imaginário 'z' que determina a frente e o fundo."
+            },
+            {
+                question: "Qual método é usado para adicionar um comentário em um arquivo CSS?",
+                answerOptions: [
+                    { text: "// comentário", rationale: "Esta é a sintaxe para comentários em JavaScript, não em CSS.", isCorrect: false },
+                    { text: "", rationale: "Esta é a sintaxe para comentários em HTML, não em CSS.", isCorrect: false },
+                    { text: "/* comentário */", rationale: "Esta é a sintaxe correta para comentários em CSS.", isCorrect: true },
+                    { text: "# comentário", rationale: "Esta sintaxe é usada para comentários em algumas linguagens de script, mas não em CSS.", isCorrect: false }
+                ],
+                hint: "Lembre-se dos caracteres usados para abrir e fechar comentários em CSS."
+            },
+            {
+                question: "Qual propriedade CSS é usada para definir a fonte de um texto?",
+                answerOptions: [
+                    { text: "text-style", rationale: "Não existe a propriedade 'text-style' em CSS.", isCorrect: false },
+                    { text: "font-family", rationale: "A propriedade 'font-family' especifica a fonte do texto.", isCorrect: true },
+                    { text: "text-font", rationale: "Não existe a propriedade 'text-font' em CSS.", isCorrect: false },
+                    { text: "font-weight", rationale: "A propriedade 'font-weight' define a espessura da fonte, não a fonte em si.", isCorrect: false }
+                ],
+                hint: "Pense na propriedade que define a 'família' da fonte."
+            },
+            {
+                question: "Qual valor da propriedade CSS `position` fixa um elemento na tela, mesmo quando a página é rolada?",
+                answerOptions: [
+                    { text: "relative", rationale: "O valor 'relative' posiciona o elemento em relação à sua posição normal no fluxo.", isCorrect: false },
+                    { text: "absolute", rationale: "O valor 'absolute' posiciona o elemento em relação ao seu ancestral posicionado mais próximo.", isCorrect: false },
+                    { text: "fixed", rationale: "O valor 'fixed' fixa o elemento na viewport, mesmo durante a rolagem.", isCorrect: true },
+                    { text: "static", rationale: "O valor 'static' é o valor padrão, e o elemento segue o fluxo normal do documento.", isCorrect: false }
+                ],
+                hint: "Pense em elementos como menus ou barras que permanecem visíveis mesmo ao rolar a página."
+            },
+            {
+                question: "Qual tag HTML é usada para incorporar conteúdo de outra fonte, como um vídeo do YouTube, diretamente na sua página?",
+                answerOptions: [
+                    { text: "<video>", rationale: "A tag <video> é usada para incorporar arquivos de vídeo locais ou hospedados, não conteúdo de outras plataformas diretamente.", isCorrect: false },
+                    { text: "<iframe>", rationale: "A tag <iframe> é comumente usada para incorporar conteúdo de outras páginas ou serviços web, como vídeos do YouTube ou mapas.", isCorrect: true },
+                    { text: "<embed>", rationale: "A tag <embed> é um contêiner genérico para conteúdo externo, mas <iframe> é mais específico e comum para o cenário de incorporação de serviços.", isCorrect: false },
+                    { text: "<source>", rationale: "A tag <source> é usada dentro de elementos <video> ou <audio> para especificar múltiplos arquivos de mídia.", isCorrect: false }
+                ],
+                hint: "Esta tag cria uma 'moldura' para o conteúdo externo."
+            },
+            {
+                question: "Qual atributo HTML é usado para fornecer um texto alternativo para uma imagem, importante para acessibilidade e SEO?",
+                answerOptions: [
+                    { text: "src", rationale: "O atributo 'src' especifica o caminho para o arquivo da imagem.", isCorrect: false },
+                    { text: "title", rationale: "O atributo 'title' fornece um texto de dica que aparece ao passar o mouse, mas não é o texto alternativo principal para acessibilidade.", isCorrect: false },
+                    { text: "alt", rationale: "O atributo 'alt' fornece um texto alternativo que é exibido se a imagem não puder ser carregada ou para leitores de tela.", isCorrect: true },
+                    { text: "href", rationale: "O atributo 'href' é usado para links, não para imagens.", isCorrect: false }
+                ],
+                hint: "Pense no que acontece se a imagem não carregar ou para usuários com deficiência visual."
+            },
+            {
+                question: "Qual propriedade CSS é usada para controlar o alinhamento horizontal do texto dentro de um elemento?",
+                answerOptions: [
+                    { text: "vertical-align", rationale: "A propriedade 'vertical-align' controla o alinhamento vertical de elementos inline ou células de tabela.", isCorrect: false },
+                    { text: "text-decoration", rationale: "A propriedade 'text-decoration' adiciona ou remove decorações como sublinhado ou tachado.", isCorrect: false },
+                    { text: "text-align", rationale: "A propriedade 'text-align' controla o alinhamento horizontal do texto (left, right, center, justify).", isCorrect: true },
+                    { text: "line-height", rationale: "A propriedade 'line-height' define a altura de uma linha de texto.", isCorrect: false }
+                ],
+                hint: "Esta propriedade é frequentemente usada para centralizar ou justificar o texto."
+            },
+            {
+                question: "No contexto de Design Responsivo, o que significa a abordagem 'Mobile-First'?",
+                answerOptions: [
+                    { text: "Projetar o site apenas para dispositivos móveis, ignorando desktops.", rationale: "Mobile-First significa começar com o mobile, mas depois expandir para telas maiores, não ignorá-las.", isCorrect: false },
+                    { text: "Desenvolver primeiro para telas de desktop e depois adaptar para dispositivos móveis.", rationale: "Esta é a abordagem 'Desktop-First', o oposto de Mobile-First.", isCorrect: false },
+                    { text: "Começar o design e desenvolvimento para a experiência em dispositivos móveis, e então escalar para telas maiores.", rationale: "Mobile-First foca na otimização para telas pequenas primeiro, adicionando complexidade para telas maiores.", isCorrect: true },
+                    { text: "Utilizar apenas JavaScript para criar layouts responsivos.", rationale: "Mobile-First é uma filosofia de design que envolve HTML e CSS, não se limita ao JavaScript.", isCorrect: false }
+                ],
+                hint: "Pense na ordem de prioridade no processo de design e desenvolvimento."
+            },
+            {
+                question: "Qual das seguintes opções é um exemplo de entidade HTML?",
+                answerOptions: [
+                    { text: "<p>", rationale: "<p> é uma tag HTML, usada para definir um parágrafo.", isCorrect: false },
+                    { text: "href", rationale: "href é um atributo HTML, usado em tags como <a> para definir o destino do link.", isCorrect: false },
+                    { text: "&copy;", rationale: "&copy; é uma entidade HTML que representa o símbolo de copyright.", isCorrect: true },
+                    { text: "class", rationale: "class é um atributo HTML, usado para aplicar classes CSS a elementos.", isCorrect: false }
+                ],
+                hint: "Entidades são usadas para exibir caracteres especiais em HTML."
+            },
+            {
+                question: "Qual é a principal função do protocolo HTTP na comunicação web?",
+                answerOptions: [
+                    { text: "Estilizar a aparência das páginas web.", rationale: "Estilizar é a função do CSS.", isCorrect: false },
+                    { text: "Definir a estrutura do conteúdo de uma página web.", rationale: "Definir a estrutura é a função do HTML.", isCorrect: false },
+                    { text: "Transferir dados (como páginas HTML) entre o cliente e o servidor.", rationale: "HTTP (Hypertext Transfer Protocol) é o protocolo fundamental para a comunicação de dados na web.", isCorrect: true },
+                    { text: "Executar scripts no lado do cliente para interatividade.", rationale: "Executar scripts é a função do JavaScript.", isCorrect: false }
+                ],
+                hint: "Pense no que permite que seu navegador 'fale' com um servidor web."
+            }
+            ,
+            {
+                question: "Qual propriedade CSS ativa o layout Flexbox em um contêiner?",
+                answerOptions: [
+                    { text: "display: flex;", rationale: "'display: flex;' transforma o elemento em um contêiner flexível, ativando o Flexbox.", isCorrect: true },
+                    { text: "flex-direction: row;", rationale: "'flex-direction' define a direção dos itens, mas não ativa o Flexbox por si só.", isCorrect: false },
+                    { text: "align-items: center;", rationale: "'align-items' alinha itens em Flexbox, mas não ativa o Flexbox.", isCorrect: false },
+                    { text: "display: grid;", rationale: "'display: grid;' ativa o Grid Layout, não o Flexbox.", isCorrect: false }
+                ],
+                hint: "Pense na propriedade que transforma um elemento em um contêiner flexível."
+            },
+            {
+                question: "No Flexbox, qual propriedade define a direção principal dos itens dentro do contêiner?",
+                answerOptions: [
+                    { text: "flex-direction", rationale: "'flex-direction' define se os itens ficam em linha, coluna, etc.", isCorrect: true },
+                    { text: "justify-content", rationale: "'justify-content' alinha os itens ao longo do eixo principal, mas não define a direção.", isCorrect: false },
+                    { text: "align-items", rationale: "'align-items' alinha os itens no eixo cruzado.", isCorrect: false },
+                    { text: "flex-wrap", rationale: "'flex-wrap' define se os itens podem quebrar linha, mas não a direção.", isCorrect: false }
+                ],
+                hint: "Essa propriedade pode receber valores como 'row' ou 'column'."
+            },
+            {
+                question: "Qual propriedade Flexbox é usada para distribuir espaço extra entre os itens ao longo do eixo principal?",
+                answerOptions: [
+                    { text: "align-items", rationale: "'align-items' alinha itens no eixo cruzado.", isCorrect: false },
+                    { text: "justify-content", rationale: "'justify-content' controla o alinhamento e espaçamento dos itens no eixo principal.", isCorrect: true },
+                    { text: "flex-grow", rationale: "'flex-grow' define quanto um item pode crescer, mas não distribui o espaço entre todos.", isCorrect: false },
+                    { text: "order", rationale: "'order' altera a ordem dos itens, não o espaçamento.", isCorrect: false }
+                ],
+                hint: "Use esta propriedade para centralizar ou espaçar igualmente os itens horizontalmente."
+            },
+            {
+                question: "Qual valor da propriedade 'display' ativa o CSS Grid Layout em um elemento?",
+                answerOptions: [
+                    { text: "display: flex;", rationale: "'display: flex;' ativa o Flexbox, não o Grid.", isCorrect: false },
+                    { text: "display: block;", rationale: "'display: block;' é o valor padrão para muitos elementos, mas não ativa Grid.", isCorrect: false },
+                    { text: "display: grid;", rationale: "'display: grid;' ativa o Grid Layout, permitindo criar layouts bidimensionais.", isCorrect: true },
+                    { text: "display: inline;", rationale: "'display: inline;' não ativa Grid.", isCorrect: false }
+                ],
+                hint: "É um valor de display específico para layouts bidimensionais."
+            },
+            {
+                question: "No CSS Grid, qual propriedade define o número e o tamanho das colunas do grid?",
+                answerOptions: [
+                    { text: "grid-template-rows", rationale: "'grid-template-rows' define as linhas, não as colunas.", isCorrect: false },
+                    { text: "grid-template-columns", rationale: "'grid-template-columns' define o número e o tamanho das colunas do grid.", isCorrect: true },
+                    { text: "grid-column-gap", rationale: "'grid-column-gap' define o espaçamento entre colunas, não o número/tamanho.", isCorrect: false },
+                    { text: "justify-items", rationale: "'justify-items' alinha itens dentro das células, não define colunas.", isCorrect: false }
+                ],
+                hint: "Procure pela propriedade que contém a palavra 'columns'."
+            },
+            {
+                question: "Qual propriedade CSS Grid permite que um item ocupe várias colunas?",
+                answerOptions: [
+                    { text: "grid-row", rationale: "'grid-row' controla a posição e abrangência nas linhas.", isCorrect: false },
+                    { text: "grid-column", rationale: "'grid-column' permite definir início/fim e abrangência de colunas para um item.", isCorrect: true },
+                    { text: "grid-area", rationale: "'grid-area' pode abranger linhas e colunas, mas não é específica para colunas.", isCorrect: false },
+                    { text: "justify-self", rationale: "'justify-self' alinha o item dentro da célula, não abrange colunas.", isCorrect: false }
+                ],
+                hint: "Essa propriedade pode receber valores como '1 / 3' para abranger duas colunas."
+            },
+            {
+                question: "Qual classe Tailwind é usada para aplicar uma margem superior de 4 unidades?",
+                answerOptions: [
+                    { text: "mt-4", rationale: "'mt-4' aplica margem superior (margin-top) de 1rem (4 unidades Tailwind).", isCorrect: true },
+                    { text: "mb-4", rationale: "'mb-4' aplica margem inferior, não superior.", isCorrect: false },
+                    { text: "pt-4", rationale: "'pt-4' aplica padding superior, não margem.", isCorrect: false },
+                    { text: "ml-4", rationale: "'ml-4' aplica margem à esquerda.", isCorrect: false }
+                ],
+                hint: "Procure pela abreviação de 'margin top'."
+            },
+            {
+                question: "Como você define a cor de fundo de um elemento para azul-claro usando Tailwind?",
+                answerOptions: [
+                    { text: "bg-blue-100", rationale: "'bg-blue-100' aplica um tom claro de azul como cor de fundo.", isCorrect: true },
+                    { text: "text-blue-100", rationale: "'text-blue-100' altera a cor do texto, não do fundo.", isCorrect: false },
+                    { text: "border-blue-100", rationale: "'border-blue-100' altera a cor da borda.", isCorrect: false },
+                    { text: "bg-blue", rationale: "'bg-blue' não é uma classe válida no Tailwind padrão.", isCorrect: false }
+                ],
+                hint: "Classes de cor de fundo começam com 'bg-'."
+            },
+            {
+                question: "Qual classe Tailwind centraliza horizontalmente um elemento usando margin?",
+                answerOptions: [
+                    { text: "mx-auto", rationale: "'mx-auto' aplica margin-left e margin-right automáticos, centralizando blocos horizontalmente.", isCorrect: true },
+                    { text: "text-center", rationale: "'text-center' centraliza apenas o texto.", isCorrect: false },
+                    { text: "items-center", rationale: "'items-center' é usada em Flexbox para alinhar itens verticalmente.", isCorrect: false },
+                    { text: "justify-center", rationale: "'justify-center' é usada em Flexbox para alinhar itens horizontalmente.", isCorrect: false }
+                ],
+                hint: "Procure por uma classe que usa 'auto' nas margens laterais."
+            },
+            {
+                question: "Como você deixa um texto em negrito usando Tailwind?",
+                answerOptions: [
+                    { text: "font-bold", rationale: "'font-bold' aplica peso de fonte negrito.", isCorrect: true },
+                    { text: "font-semibold", rationale: "'font-semibold' é semi-negrito, não totalmente negrito.", isCorrect: false },
+                    { text: "text-bold", rationale: "'text-bold' não é uma classe Tailwind válida.", isCorrect: false },
+                    { text: "bold", rationale: "'bold' isoladamente não é uma classe Tailwind.", isCorrect: false }
+                ],
+                hint: "A classe começa com 'font-'."
+            },
+            {
+                question: "Qual classe Tailwind aplica um espaçamento vertical de 8 unidades entre elementos filhos?",
+                answerOptions: [
+                    { text: "space-y-8", rationale: "'space-y-8' adiciona espaçamento vertical (eixo y) entre elementos filhos.", isCorrect: true },
+                    { text: "gap-8", rationale: "'gap-8' funciona em layouts flex/grid, mas 'space-y-8' é para espaçamento vertical entre filhos diretos.", isCorrect: false },
+                    { text: "py-8", rationale: "'py-8' adiciona padding vertical ao elemento, não entre filhos.", isCorrect: false },
+                    { text: "my-8", rationale: "'my-8' adiciona margem vertical ao elemento, não entre filhos.", isCorrect: false }
+                ],
+                hint: "Procure por uma classe que começa com 'space-y-'."
+            },
+            {
+                question: "Qual propriedade CSS é usada para definir a duração de uma transição?",
+                answerOptions: [
+                    { text: "transition-duration", rationale: "'transition-duration' define quanto tempo a transição leva para ser concluída.", isCorrect: true },
+                    { text: "animation-duration", rationale: "'animation-duration' é usada para animações, não para transições.", isCorrect: false },
+                    { text: "transition-delay", rationale: "'transition-delay' define o atraso antes da transição começar.", isCorrect: false },
+                    { text: "transition-timing-function", rationale: "'transition-timing-function' define a curva de aceleração da transição, não a duração.", isCorrect: false }
+                ],
+                hint: "Procure pela propriedade que contém a palavra 'duration'."
+            },
+            {
+                question: "Qual propriedade CSS permite animar mudanças graduais de uma propriedade CSS para outra?",
+                answerOptions: [
+                    { text: "transition", rationale: "'transition' permite animar mudanças graduais de propriedades CSS.", isCorrect: true },
+                    { text: "animation", rationale: "'animation' é usada para animações mais complexas com keyframes.", isCorrect: false },
+                    { text: "transform", rationale: "'transform' aplica transformações, mas não animações por si só.", isCorrect: false },
+                    { text: "filter", rationale: "'filter' aplica efeitos visuais, mas não animações.", isCorrect: false }
+                ],
+                hint: "É uma propriedade abreviada usada para suavizar mudanças de estado."
+            },
+            {
+                question: "Para criar uma animação CSS baseada em etapas definidas, qual regra é usada?",
+                answerOptions: [
+                    { text: "@media", rationale: "'@media' é usada para media queries, não para animações.", isCorrect: false },
+                    { text: "@keyframes", rationale: "'@keyframes' define os estados intermediários de uma animação CSS.", isCorrect: true },
+                    { text: "@font-face", rationale: "'@font-face' é usada para fontes personalizadas.", isCorrect: false },
+                    { text: "@import", rationale: "'@import' importa arquivos CSS externos.", isCorrect: false }
+                ],
+                hint: "Essa regra começa com '@' e define quadros-chave para animações."
+            },
+            {
+                question: "Qual propriedade CSS é usada para aplicar uma animação definida por @keyframes a um elemento?",
+                answerOptions: [
+                    { text: "animation-name", rationale: "'animation-name' especifica qual animação @keyframes será usada.", isCorrect: true },
+                    { text: "transition-property", rationale: "'transition-property' define quais propriedades serão animadas em uma transição.", isCorrect: false },
+                    { text: "animation-delay", rationale: "'animation-delay' define o atraso antes da animação começar.", isCorrect: false },
+                    { text: "animation-iteration-count", rationale: "'animation-iteration-count' define quantas vezes a animação será repetida.", isCorrect: false }
+                ],
+                hint: "É a propriedade que liga o nome da animação ao elemento."
+            },
+            {
+                question: "Qual valor da propriedade 'animation-iteration-count' faz a animação repetir infinitamente?",
+                answerOptions: [
+                    { text: "infinite", rationale: "'infinite' faz a animação repetir sem parar.", isCorrect: true },
+                    { text: "forever", rationale: "'forever' não é um valor válido para 'animation-iteration-count'.", isCorrect: false },
+                    { text: "repeat", rationale: "'repeat' não é um valor válido para 'animation-iteration-count'.", isCorrect: false },
+                    { text: "loop", rationale: "'loop' não é um valor válido para 'animation-iteration-count'.", isCorrect: false }
+                ],
+                hint: "É um valor em inglês que significa 'sem fim'."
+            },
+            {
+                question: "Qual propriedade CSS define a função de aceleração (curva de velocidade) de uma transição?",
+                answerOptions: [
+                    { text: "transition-timing-function", rationale: "'transition-timing-function' define a curva de aceleração da transição.", isCorrect: true },
+                    { text: "transition-delay", rationale: "'transition-delay' define o atraso antes da transição começar.", isCorrect: false },
+                    { text: "animation-timing-function", rationale: "'animation-timing-function' é usada para animações, não para transições.", isCorrect: false },
+                    { text: "transition-duration", rationale: "'transition-duration' define o tempo total da transição, não a curva.", isCorrect: false }
+                ],
+                hint: "Procure pela propriedade que termina com 'timing-function'."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // To store user's selected answers for review
+
+        const questionTextElement = document.getElementById('questionText');
+        const answerOptionsElement = document.getElementById('answerOptions');
+        const feedbackElement = document.getElementById('feedback');
+        const hintTextElement = document.getElementById('hintText');
+        const currentQuestionNumberElement = document.getElementById('currentQuestionNumber');
+        const totalQuestionsElement = document.getElementById('totalQuestions');
+        const totalQuestionsResultsElement = document.getElementById('totalQuestionsResults');
+        const scoreDisplayElement = document.getElementById('scoreDisplay');
+        const progressBarElement = document.getElementById('progressBar');
+
+        const prevButton = document.getElementById('prevButton');
+        const nextButton = document.getElementById('nextButton');
+        const submitAnswerButton = document.getElementById('submitAnswerButton');
+        const restartButton = document.getElementById('restartButton');
+
+        const questionSection = document.getElementById('questionSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        totalQuestionsElement.textContent = quizData.length;
+        totalQuestionsResultsElement.textContent = quizData.length;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        let shuffledOptionIndexes = [];
+
+        function loadQuestion() {
+            answerOptionsElement.innerHTML = '';
+            feedbackElement.classList.add('hidden');
+            feedbackElement.textContent = '';
+            hintTextElement.classList.add('hidden');
+            hintTextElement.textContent = '';
+            submitAnswerButton.classList.remove('hidden');
+            nextButton.classList.add('hidden');
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionTextElement.textContent = currentQuestion.question;
+            currentQuestionNumberElement.textContent = currentQuestionIndex + 1;
+
+            const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+            progressBarElement.style.width = `${progress}%`;
+
+            const originalOptions = currentQuestion.answerOptions;
+            shuffledOptionIndexes = originalOptions.map((_, idx) => idx);
+            shuffleArray(shuffledOptionIndexes);
+
+            shuffledOptionIndexes.forEach((originalIdx, shuffledIdx) => {
+                const option = originalOptions[originalIdx];
+                const optionDiv = document.createElement('div');
+                optionDiv.classList.add('answer-option', 'relative');
+                optionDiv.dataset.originalIndex = originalIdx; // Salve o índice original
+
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'answer';
+                radioInput.id = `option${shuffledIdx}`;
+                radioInput.value = shuffledIdx;
+                radioInput.classList.add('form-radio', 'h-5', 'w-5', 'text-blue-600', 'cursor-pointer');
+                radioInput.addEventListener('change', () => {
+                    document.querySelectorAll('.answer-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    optionDiv.classList.add('selected');
+                });
+
+                const label = document.createElement('label');
+                label.htmlFor = `option${shuffledIdx}`;
+                label.classList.add('ml-2', 'block', 'text-gray-700', 'font-medium', 'cursor-pointer', 'flex-grow');
+                label.textContent = option.text;
+
+                optionDiv.appendChild(radioInput);
+                optionDiv.appendChild(label);
+                answerOptionsElement.appendChild(optionDiv);
+
+                // Se já respondeu, marque a opção e mostre feedback
+                if (userAnswers[currentQuestionIndex]) {
+                    const savedOriginalIndex = userAnswers[currentQuestionIndex].selectedOriginalIndex;
+                    const isCorrect = userAnswers[currentQuestionIndex].isCorrect;
+
+                    if (originalIdx === savedOriginalIndex) {
+                        radioInput.checked = true;
+                        optionDiv.classList.add('selected');
+                        if (isCorrect) {
+                            optionDiv.classList.add('correct');
+                        } else {
+                            optionDiv.classList.add('incorrect');
+                        }
+                    } else if (option.isCorrect) {
+                        optionDiv.classList.add('correct');
+                    }
+                    radioInput.disabled = true;
+                    submitAnswerButton.classList.add('hidden');
+                    nextButton.classList.remove('hidden');
+                    feedbackElement.classList.remove('hidden');
+                    feedbackElement.textContent = isCorrect ? 'Correto! ' + option.rationale : 'Incorreto. ' + option.rationale;
+                    feedbackElement.classList.add(isCorrect ? 'feedback-correct' : 'feedback-incorrect');
+                    hintTextElement.classList.remove('hidden');
+                    hintTextElement.textContent = 'Dica: ' + currentQuestion.hint;
+                }
+            });
+
+            prevButton.classList.toggle('hidden', currentQuestionIndex === 0);
+            nextButton.textContent = (currentQuestionIndex === quizData.length - 1) ? 'Ver Resultados' : 'Próxima Questão';
+        }
+
+        // Function to check the answer
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (!selectedOption) {
+                return;
+            }
+
+            const selectedShuffledIndex = parseInt(selectedOption.value);
+            const originalIndex = shuffledOptionIndexes[selectedShuffledIndex];
+            const currentQuestion = quizData[currentQuestionIndex];
+            const selectedOptionObj = currentQuestion.answerOptions[originalIndex];
+            const isCorrect = selectedOptionObj.isCorrect;
+            const rationale = selectedOptionObj.rationale;
+
+            if (isCorrect) {
+                score++;
+                feedbackElement.classList.add('feedback-correct');
+                feedbackElement.classList.remove('feedback-incorrect');
+                feedbackElement.textContent = `Correto! ${rationale}`;
+            } else {
+                feedbackElement.classList.add('feedback-incorrect');
+                feedbackElement.classList.remove('feedback-correct');
+                feedbackElement.textContent = `Incorreto. ${rationale}`;
+                // Destaca a resposta correta
+                document.querySelectorAll('.answer-option').forEach(optionDiv => {
+                    const optOriginalIndex = parseInt(optionDiv.dataset.originalIndex);
+                    if (currentQuestion.answerOptions[optOriginalIndex].isCorrect) {
+                        optionDiv.classList.add('correct');
+                    }
+                });
+            }
+
+            // Desabilita todas as opções após responder
+            document.querySelectorAll('input[name="answer"]').forEach(radio => radio.disabled = true);
+            feedbackElement.classList.remove('hidden');
+            hintTextElement.textContent = 'Dica: ' + currentQuestion.hint;
+
+            // Salva a resposta do usuário
+            userAnswers[currentQuestionIndex] = {
+                selectedOriginalIndex: originalIndex,
+                isCorrect: isCorrect
+            };
+
+            submitAnswerButton.classList.add('hidden');
+            nextButton.classList.remove('hidden');
+
+        }
+
+        // Function to move to the next question
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Function to move to the previous question
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        // Function to show results
+        function showResults() {
+            questionSection.classList.add('hidden');
+            prevButton.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            submitAnswerButton.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            scoreDisplayElement.textContent = score;
+        }
+
+        // Function to restart the quiz
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            resultsSection.classList.add('hidden');
+            questionSection.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Event Listeners
+        submitAnswerButton.addEventListener('click', checkAnswer);
+        nextButton.addEventListener('click', nextQuestion);
+        prevButton.addEventListener('click', previousQuestion);
+        restartButton.addEventListener('click', restartQuiz);
+
+        // Initial load
+        window.onload = loadQuestion;
+    </script>
+</body>
+
+</html>
